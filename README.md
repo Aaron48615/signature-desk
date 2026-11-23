@@ -17,11 +17,13 @@
 
 **Windows and Linux builds have not been tested on physical devices.** Installation, direct trackpad input and pointer recovery still need verification on real hardware. Build and test details are included in the [release notes](https://github.com/Aaron48615/signature-desk/releases/latest).
 
+Found a problem or have a suggestion? [Open a GitHub issue](https://github.com/Aaron48615/signature-desk/issues). For bugs, please include your operating system, app version and steps to reproduce. If you attach an example, use a made-up signature.
+
 ## Signing and exporting
 
 In **Standard** mode, move the pointer over the page to preview the pen’s color and width at the current canvas scale. The exported PNG contains the signature and your chosen background. The paper texture, guides and cursor appear only on screen.
 
-**Natural nib** adjusts new strokes to writing speed. Slow strokes get a little wider. The body of a fast stroke retains at least 86% of the selected width, with a minimum of one canvas pixel. A quick lift tapers the last part of the stroke. Pausing before lifting leaves a rounded end, and a tap makes a dot. The setting starts off, and you can mix both pen styles on one canvas. Each stroke keeps its recorded width when you export or change the background. [See the synthetic stroke samples](验收样张/自然笔锋.png).
+**Natural nib** adjusts new strokes to writing speed. Slow strokes get a little wider. The body of a fast stroke retains at least 86% of the selected width, with a minimum of one canvas pixel. A quick lift tapers the last part of the stroke. Pausing before lifting leaves a rounded end, and a tap makes a dot. The setting starts off, and you can mix both pen styles on one canvas. Each stroke keeps its recorded width when you export or change the background.
 
 **Trackpad ink** starts each stroke where your finger touches the pad. A second contact pauses writing until all fingers lift. Press **Esc** or switch to another app to leave the mode. If the trackpad disconnects, the strokes already on the canvas stay there. All editing and export tools are available in the offline web page. Direct, one-finger trackpad writing requires the desktop app.
 
@@ -65,7 +67,7 @@ npm run test:browser     # After npm run build, test the offline file in headles
 npm run test:webkit-caps # After npm run build, check stroke ends in macOS system WebKit
 ```
 
-Browser tests use the locally installed Chrome by default. Set `INKPAD_CHROME` to use another Chromium executable. The desktop script also recognizes a Rust toolchain in the project’s local build cache. The packaged app accepts `--check-ui` to initialize the editor, enumerate devices and check the message channel in a hidden window, then exit without activating trackpad capture. On macOS, run `"./release/Signature Desk.app/Contents/MacOS/signature-desk" --check-ui`. The [verification record](验收记录.md) and [contributor guide](AGENTS.md) are in Chinese.
+Browser tests use the locally installed Chrome by default. Set `INKPAD_CHROME` to use another Chromium executable. The desktop script also recognizes a Rust toolchain in the project’s local build cache. The packaged app accepts `--check-ui` to initialize the editor, enumerate devices and check the message channel in a hidden window, then exit without activating trackpad capture. On macOS, run `"./release/Signature Desk.app/Contents/MacOS/signature-desk" --check-ui`. The [contributor guide](AGENTS.md) is in Chinese.
 
 ## Illustration
 

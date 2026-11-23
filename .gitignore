@@ -6,3 +6,5 @@ src-tauri/target/
 src-tauri/gen/
 output/
 .DS_Store
+/验收记录.md
+/验收样张/

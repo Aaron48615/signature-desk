@@ -19,11 +19,13 @@
 | [Windows 安装程序](https://github.com/Aaron48615/signature-desk/releases/latest/download/Signature-Desk-Windows-x64-Setup.exe) | **未经真机测试，请酌情下载。** Windows 11 x64。安装包内含微软 x64 WebView2 离线运行时。直写需要提供原始接触报告的精确式触摸板。 |
 | [Ubuntu 软件包](https://github.com/Aaron48615/signature-desk/releases/latest/download/Signature-Desk-Ubuntu-amd64.deb) | **未经真机测试，请酌情下载。** Ubuntu 24.04 x64。运行 `sudo apt install ./Signature-Desk-Ubuntu-amd64.deb`。缺少 GTK 或 WebKitGTK 时，系统包管理器需要从软件源或本地缓存安装依赖。 |
 
+遇到问题或有改进建议，欢迎到 [GitHub Issues](https://github.com/Aaron48615/signature-desk/issues) 反馈。报告故障时请注明系统、软件版本和复现步骤；如需附图，请使用虚构签名。
+
 应用没有账户、自动草稿或远程字体，纸纹、图标与钢笔水彩插画随包提供。首次启动默认英文，可在书写模式左侧用 EN / 中文 切换。标题随之显示为 Signature Desk 或「签字板」。桌面应用将语言写入应用配置目录的 language 文件，网页将语言写入当前浏览器的本地存储。同一浏览器再次打开同一文件会恢复语言；浏览器禁用存储时，当前窗口仍可切换。
 
 常规模式下，把鼠标移到纸上即可预览笔尖。圆圈按当前墨色、粗细和画板缩放显示，导出的 PNG 只含签名和选定背景。
 
-**自然笔锋（Natural nib）。** 勾选粗细滑块旁的「自然笔锋」后，鼠标和单指直写都能按速度调整新笔画。慢写稍厚，快写时主体至少保留基础宽度的 86%，最细为 1 个画板像素。快速提笔只收窄最后一小段，停住再抬手保留圆尾，轻点保留所选大小。开关默认关闭，切换后可在同一张画板上混用两种笔迹。导出或改变背景时使用每笔已经记录的线宽。[查看合成笔迹对照](验收样张/自然笔锋.png)
+**自然笔锋（Natural nib）。** 勾选粗细滑块旁的「自然笔锋」后，鼠标和单指直写都能按速度调整新笔画。慢写稍厚，快写时主体至少保留基础宽度的 86%，最细为 1 个画板像素。快速提笔只收窄最后一小段，停住再抬手保留圆尾，轻点保留所选大小。开关默认关闭，切换后可在同一张画板上混用两种笔迹。导出或改变背景时使用每笔已经记录的线宽。
 
 **触板直写。** 手指落在板面的哪里，签名就从相应位置开始。轻点形成一个点，抬手断笔。多指接触时暂停，全部抬起后继续。按 **Esc** 恢复指针操作，也可切走整个应用退出直写。设备断开时已写的笔迹仍在。普通浏览器可以完成全部编辑与导出；需要直写时请打开桌面应用。
 
@@ -67,7 +69,7 @@ npm run test:webkit-caps  # 构建后在 macOS 系统 WebKit 检查笔画端点
 "./release/Signature Desk.app/Contents/MacOS/signature-desk" --check-ui
 ```
 
-本次构建与实测记录见 [验收记录](验收记录.md)，开发入口与隐私约束见 [AGENTS.md](AGENTS.md)。
+开发入口与隐私约束见 [AGENTS.md](AGENTS.md)。
 
 ## 界面插画
 
