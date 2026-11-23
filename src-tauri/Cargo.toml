@@ -1,0 +1,21 @@
+[package]
+name = "signature-desk"
+version = "0.4.1"
+edition = "2021"
+description = "本地手写签字板"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+cc = "1"
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+tempfile = "3"
+rfd = { version = "0.16", default-features = false, features = ["gtk3"] }
+
+[features]
+custom-protocol = ["tauri/custom-protocol"]
+
+[dev-dependencies]
+serde_json = "1"
