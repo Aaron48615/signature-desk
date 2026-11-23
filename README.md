@@ -1,6 +1,8 @@
 # Signature Desk · 签字板
 
-打开本地文件即可签名、编辑并导出 PNG。签名轨迹只在当前窗口的内存中，关闭后清除。应用没有账户、上传、自动草稿或远程字体，纸纹、图标与钢笔水彩插画随包提供，断网可用。首次启动默认英文，可在书写模式左侧用 EN / 中文 切换。标题随之显示为 Signature Desk 或「签字板」。桌面应用将语言写入应用配置目录的 language 文件，网页将语言写入当前浏览器的本地存储。同一浏览器再次打开同一文件会恢复语言；浏览器禁用存储时，当前窗口仍可切换。
+**签名全程在本地处理。** 从落笔、裁剪、旋转到导出 PNG，操作都在自己的设备上完成，签名图片和笔迹坐标不会上传到网络。断网也能完整使用。笔迹仅存在于当前窗口的内存，关闭后即清除，只有主动导出的 PNG 会保存到磁盘。
+
+**Mac 触控板可以直接写字。** 在 Apple Silicon Mac 上打开桌面版，选择「触板直写」，抬手后按空格开始。用一根手指轻触触控板即可落笔，无需按压；轻触左上角，就从画板左上角开始写，抬手即可断笔。按 Esc 结束直写。
 
 ## 开始使用
 
@@ -14,6 +16,8 @@
 | [Mac 应用 ZIP](https://github.com/Aaron48615/signature-desk/releases/latest/download/Signature-Desk-macOS-arm64.zip) | Apple Silicon。解压后打开应用，选「触板直写」，把手指抬离触控板，按空格开始。 |
 | [Windows 安装程序](https://github.com/Aaron48615/signature-desk/releases/latest/download/Signature-Desk-Windows-x64-Setup.exe) | **未经真机测试，请酌情下载。** Windows 11 x64。安装包内含微软 x64 WebView2 离线运行时。直写需要提供原始接触报告的精确式触摸板。 |
 | [Ubuntu 软件包](https://github.com/Aaron48615/signature-desk/releases/latest/download/Signature-Desk-Ubuntu-amd64.deb) | **未经真机测试，请酌情下载。** Ubuntu 24.04 x64。运行 `sudo apt install ./Signature-Desk-Ubuntu-amd64.deb`。缺少 GTK 或 WebKitGTK 时，系统包管理器需要从软件源或本地缓存安装依赖。 |
+
+应用没有账户、自动草稿或远程字体，纸纹、图标与钢笔水彩插画随包提供。首次启动默认英文，可在书写模式左侧用 EN / 中文 切换。标题随之显示为 Signature Desk 或「签字板」。桌面应用将语言写入应用配置目录的 language 文件，网页将语言写入当前浏览器的本地存储。同一浏览器再次打开同一文件会恢复语言；浏览器禁用存储时，当前窗口仍可切换。
 
 常规模式下，把鼠标移到纸上即可预览笔尖。圆圈按当前墨色、粗细和画板缩放显示，导出的 PNG 只含签名和选定背景。
 
