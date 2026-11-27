@@ -1,6 +1,6 @@
 [package]
 name = "signature-desk"
-version = "0.4.1"
+version = "0.4.2"
 edition = "2021"
 description = "本地手写签字板"
 

@@ -43,6 +43,22 @@ test('undo, redo, saved state and branching are independent', () => {
   assert.equal(h.canRedo, false);
 });
 
+test('direct stroke history stops at a canvas edit and discards redo after new ink', () => {
+  const h = new History();
+  h.commit({ ...h.current, scene: resize(h.current.scene, 900, 600) });
+  const write = () => h.commit({ ...h.current, scene: drawn(h.current.scene, mark) }, 'stroke');
+  write();
+  assert.equal(h.isStrokeStep(false), true);
+  h.undo();
+  assert.equal(h.isStrokeStep(false), false);
+  assert.equal(h.isStrokeStep(true), true);
+  h.redo();
+  assert.equal(h.isStrokeStep(false), true);
+  h.undo();
+  write();
+  assert.equal(h.isStrokeStep(true), false);
+});
+
 import { PathInput } from '../src/path-input.ts';
 test('re-entry starts a separate subpath while legal edge strokes are preserved', () => {
   const path = new PathInput();

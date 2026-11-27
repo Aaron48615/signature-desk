@@ -1,10 +1,11 @@
 // Synthetic desktop input with an in-memory PNG destination, for both browser engines.
-export function installCapBridge() {
+export function installCapBridge(deviceId = 'test') {
   window.isTauri = true;
   window.__TAURI_INTERNALS__ = {
     transformCallback: () => 1,
     invoke: async (command, args) => {
-      if (command === 'devices') return [{ id: 'test', name: 'Synthetic', ratio: 1.5, status: 0 }];
+      if (command === 'devices')
+        return [{ id: deviceId, name: 'Synthetic', ratio: deviceId === 'appkit' ? 0 : 1.5, status: 0 }];
       if (command === 'start_input') window.capInput = args.output;
       if (command === 'save_png') {
         window.capFile = new Blob([args], { type: 'image/png' });

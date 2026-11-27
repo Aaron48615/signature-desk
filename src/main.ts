@@ -53,6 +53,7 @@ let session = 0,
   saving = false,
   pendingPaint = false;
 let deviceList: host.Device[] = [];
+let macDirect = false;
 let lastDirty = false,
   modeDialog = false,
   confirmAction: (() => void) | undefined;
@@ -139,6 +140,8 @@ function showPreview() {
   preview.style.width = pw / devicePixelRatio + 'px';
   preview.style.height = ph / devicePixelRatio + 'px';
 }
+// Stable reference for Mac input edge filtering, independent of display size.
+const macEdgeReferenceWidth = 359;
 function fitBoard() {
   const s = current();
   paper.style.aspectRatio = s.w + '/' + s.h;
@@ -157,7 +160,8 @@ function fitBoard() {
   const stacked = innerWidth < 640;
   const below = stacked ? el('exportSidebar').offsetHeight + 10 : 0;
   const available = Math.max(stacked ? 98 : 90, innerHeight - reserved - below);
-  paper.style.maxWidth = 'min(100%, ' + (available * s.w) / s.h + 'px)';
+  const width = (available * s.w) / s.h;
+  paper.style.maxWidth = 'min(100%, ' + width + 'px)';
 }
 function sync() {
   const s = current();
@@ -189,13 +193,13 @@ function sync() {
   repaint();
   showPreview();
 }
-function change(scene: Scene) {
+function change(scene: Scene, kind: 'edit' | 'stroke' = 'edit') {
   if (!validSize(scene.w, scene.h)) {
     say('画板最大边长 8192 px，总面积最多 1677 万像素。');
     return;
   }
   const previous = current();
-  history.commit({ ...history.current, scene });
+  history.commit({ ...history.current, scene }, kind);
   if (!customOutput || (locked && (previous.w !== scene.w || previous.h !== scene.h))) {
     if (!customOutput) defaultOutput();
     else
@@ -270,7 +274,7 @@ function finishStroke(time?: number) {
     if (pen?.nib) draft.endTaper = pen.nib.lift(time);
     const stroke = draft;
     draft = undefined;
-    change(drawn(current(), stroke));
+    change(drawn(current(), stroke), 'stroke');
   }
   pen = undefined;
 }
@@ -319,18 +323,19 @@ function samplePath(p: Point, first: boolean, time: number) {
   }
   const ink = pen?.nib?.sample(p, time) ?? p;
   if (direct && !lastDirty && p.x >= 0 && p.x <= 1 && p.y >= 0 && p.y <= 1) markStrokeDirty();
-  if (first) {
-    const s = current(),
-      radius = input('weight').valueAsNumber / 2;
-    // The subpixel guard accounts for antialiasing at the displayed paper edge.
-    const band = direct
-      ? {
-          x: Math.min(0.02, radius / s.w + 1 / Math.max(1, board.clientWidth)),
-          y: Math.min(0.02, radius / s.h + 1 / Math.max(1, board.clientHeight)),
-        }
-      : undefined;
-    pathInput.start(ink, band);
-  } else pathInput.move(ink);
+  if (first) pathInput.start(ink, direct ? edgeBand() : undefined);
+  else pathInput.move(ink);
+}
+function edgeBand(): Point {
+  const s = current(), radius = input('weight').valueAsNumber / 2;
+  // A one-pixel allowance at the reference size keeps Mac edge filtering
+  // independent of the current window's display scale.
+  const w = macDirect ? macEdgeReferenceWidth : board.clientWidth;
+  const h = macDirect ? macEdgeReferenceWidth * s.h / s.w : board.clientHeight;
+  return {
+    x: Math.min(0.02, radius / s.w + 1 / Math.max(1, w)),
+    y: Math.min(0.02, radius / s.h + 1 / Math.max(1, h)),
+  };
 }
 function appendPortion(part: Portion) {
   if (!part.start && !part.end) return;
@@ -390,6 +395,7 @@ board.onlostpointercapture = () => {
   if (pointer !== undefined) cancelPointer();
 };
 function travel(redo: boolean) {
+  if (direct && (pen || !history.isStrokeStep(redo))) return;
   if (redo) history.redo();
   else history.undo();
   if (!customOutput) defaultOutput();
@@ -464,6 +470,10 @@ function receive(sample: host.Sample, id: number) {
     void leaveDirect(sample.phase === 'lost' ? '输入已中断，已保留笔迹。' : '已结束直写。');
     return;
   }
+  if (sample.phase === 'undo' || sample.phase === 'redo') {
+    travel(sample.phase === 'redo');
+    return;
+  }
   const time = sample.timeMs ?? performance.now();
   if (sample.phase === 'end') {
     shownTouch = undefined;
@@ -493,6 +503,7 @@ function receive(sample: host.Sample, id: number) {
 }
 function mode(active: boolean) {
   direct = active;
+  macDirect = active && selectedDevice()?.id === 'appkit';
   hideTip();
   shownTouch = undefined;
   el('captureHint').hidden = !active;
@@ -655,6 +666,10 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       e.preventDefault();
       void leaveDirect();
+    } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') &&
+               !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      e.preventDefault();
+      if (!e.repeat) travel(e.key === 'ArrowRight');
     }
     return;
   }

@@ -1,5 +1,7 @@
 [
   { "count": 1, "x": 0.08, "y": 0.1, "expect": "begin" },
+  { "count": -3, "x": 0, "y": 0, "expect": "undo" },
+  { "count": -4, "x": 0, "y": 0, "expect": "redo" },
   { "count": 0, "x": 0, "y": 0, "expect": "end" },
   { "count": 1, "x": 0.78, "y": 0.78, "expect": "begin" },
   { "count": 1, "x": 0.9, "y": 0.88, "expect": "move" },

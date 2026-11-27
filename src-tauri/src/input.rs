@@ -31,6 +31,10 @@ struct Gate {
 }
 impl Gate {
     fn phase(&mut self, count: i32) -> Option<&'static str> {
+        // Keyboard commands share the ordered input channel with contact frames.
+        if count == -3 || count == -4 {
+            return Some(if count == -3 { "undo" } else { "redo" });
+        }
         if count < 0 {
             self.drawing = false;
             return Some(if count == -1 { "stop" } else { "lost" });

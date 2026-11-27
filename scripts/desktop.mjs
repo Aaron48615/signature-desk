@@ -18,9 +18,29 @@ function run(command, args) {
   if (p.status !== 0) process.exit(p.status ?? 1);
 }
 const action = process.argv[2];
-if (action === 'test')
+if (action === 'test') {
+  if (process.platform === 'darwin') {
+    const testDir = join(root, '.build/tests');
+    const executable = join(testDir, 'macos-input');
+    await mkdir(testDir, { recursive: true });
+    run('xcrun', [
+      'clang',
+      '-fobjc-arc',
+      'tests/macos-input.m',
+      'src-tauri/native/macos.m',
+      '-framework',
+      'AppKit',
+      '-framework',
+      'CoreGraphics',
+      '-framework',
+      'IOKit',
+      '-o',
+      executable,
+    ]);
+    run(executable, []);
+  }
   run('cargo', ['test', '--locked', '--manifest-path', 'src-tauri/Cargo.toml']);
-else {
+} else {
   const bundle = { darwin: 'app', win32: 'nsis', linux: 'deb' }[process.platform];
   if (!bundle) throw new Error('当前平台暂未支持');
   const cli = join(root, 'node_modules/@tauri-apps/cli/tauri.js');

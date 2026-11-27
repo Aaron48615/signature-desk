@@ -9,7 +9,7 @@ export interface Device {
 }
 export interface Sample {
   timeMs: number;
-  phase: 'begin' | 'move' | 'end' | 'stop' | 'lost';
+  phase: 'begin' | 'move' | 'end' | 'stop' | 'lost' | 'undo' | 'redo';
   x: number;
   y: number;
   ratio: number;

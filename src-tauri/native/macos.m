@@ -8,6 +8,8 @@
 @property uint32_t session;
 @property BOOL sawBeginning;
 @property id device;
+@property id strokeIdentity;
+@property NSPoint lastPosition;
 @end
 
 static InkCapture *capture;
@@ -35,21 +37,44 @@ static io_iterator_t removals;
 - (void)scrollWheel:(NSEvent *)event {
 }
 - (void)keyDown:(NSEvent *)event {
-  if (event.keyCode == 53)
+  if (event.keyCode == 53) {
     self.sink(self.session, -1, 0, 0, 0, event.timestamp * 1000);
+    return;
+  }
+  NSEventModifierFlags modifiers = NSEventModifierFlagCommand | NSEventModifierFlagControl |
+                                   NSEventModifierFlagOption | NSEventModifierFlagShift;
+  if (event.isARepeat || (event.modifierFlags & modifiers)) return;
+  if (event.keyCode == 123 || event.keyCode == 124)
+    self.sink(self.session, event.keyCode == 123 ? INK_UNDO : INK_REDO,
+              0, 0, 0, event.timestamp * 1000);
 }
-- (void)read:(NSEvent *)event {
+- (void)read:(NSEvent *)event phase:(NSTouchPhase)phase {
   if (!self.sawBeginning)
     return;
   NSSet<NSTouch *> *touches = [event touchesMatchingPhase:NSTouchPhaseTouching
                                                    inView:self];
   NSTouch *t = touches.anyObject;
   if (!t) {
+    if (phase == NSTouchPhaseEnded && self.strokeIdentity) {
+      NSSet<NSTouch *> *ended = [event touchesMatchingPhase:NSTouchPhaseEnded inView:self];
+      NSTouch *lift = ended.anyObject;
+      if (ended.count == 1 && [self.strokeIdentity isEqual:lift.identity] &&
+          [self.device isEqual:lift.device]) {
+        NSPoint p = lift.normalizedPosition;
+        NSSize size = lift.deviceSize;
+        if (size.width > 0 && size.height > 0 && p.x >= 0 && p.x <= 1 &&
+            p.y >= 0 && p.y <= 1 && !NSEqualPoints(self.lastPosition, p))
+          self.sink(self.session, 1, p.x, 1.0 - p.y, size.width / size.height,
+                    event.timestamp * 1000);
+      }
+    }
+    self.strokeIdentity = nil;
     self.sink(self.session, 0, 0, 0, 0, event.timestamp * 1000);
     self.device = nil;
     return;
   }
   if (self.device && ![self.device isEqual:t.device]) {
+    self.strokeIdentity = nil;
     self.sink(self.session, 2, 0, 0, 0, event.timestamp * 1000);
     return;
   }
@@ -57,20 +82,27 @@ static io_iterator_t removals;
   NSSize size = t.deviceSize;
   if (size.height <= 0 || size.width <= 0)
     return;
-  self.sink(self.session, (int)touches.count, t.normalizedPosition.x,
-            1.0 - t.normalizedPosition.y, size.width / size.height, event.timestamp * 1000);
+  if (touches.count != 1)
+    self.strokeIdentity = nil;
+  else if (phase == NSTouchPhaseBegan)
+    self.strokeIdentity = t.identity;
+  NSPoint p = t.normalizedPosition;
+  self.lastPosition = p;
+  self.sink(self.session, (int)touches.count, p.x, 1.0 - p.y,
+            size.width / size.height, event.timestamp * 1000);
 }
 - (void)touchesBeganWithEvent:(NSEvent *)event {
   self.sawBeginning = YES;
-  [self read:event];
+  [self read:event phase:NSTouchPhaseBegan];
 }
 - (void)touchesMovedWithEvent:(NSEvent *)event {
-  [self read:event];
+  [self read:event phase:NSTouchPhaseMoved];
 }
 - (void)touchesEndedWithEvent:(NSEvent *)event {
-  [self read:event];
+  [self read:event phase:NSTouchPhaseEnded];
 }
 - (void)touchesCancelledWithEvent:(NSEvent *)event {
+  self.strokeIdentity = nil;
   self.sink(self.session, -2, 0, 0, 0, event.timestamp * 1000);
 }
 @end

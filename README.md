@@ -35,6 +35,8 @@ The app opens in English. Use **EN / 中文** to change languages. The desktop a
 
 ## Trackpad edges and calibration
 
+The full canvas shows ink at the same scale while writing and after exiting. In Trackpad ink, lift your finger and press **←** to undo a stroke or **→** to redo it. The initial pen width is **6 px**.
+
 On macOS, Trackpad ink reads absolute coordinates from AppKit’s `NSTouch.normalizedPosition`, independently of the system pointer speed. Standard mode follows the system pointer. Before starting a direct-writing session, enable **Show touch position** to see the reported X/Y percentages and where the point lands on the canvas. These guides are never exported. [Apple’s trackpad event documentation](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/EventOverview/HandlingTouchEvents/HandlingTouchEvents.html).
 
 A stroke that leaves the writing area is clipped at the boundary and resumes when it comes back. You can write along an edge and lift to keep the whole mark. If you slide in from the outside, an initial segment along the edge can disappear once the finger moves inward. To preserve an intentional edge stroke followed by an inward turn, lift between the two. If the device consistently reports the same extremes, such as X = 0.00% and 99.80%, enter those readings under **Edge calibration** and leave unmeasured edges at their defaults. The settings take effect when you press **Space** and last for the current window. If the hardware repeatedly reports the same coordinate near an edge, additional physical movement cannot be reconstructed from those samples.

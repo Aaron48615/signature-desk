@@ -110,6 +110,7 @@ export function flip(scene: Scene, horizontal: boolean): Scene {
 export class History {
   private past: Artwork[] = [];
   private future: Artwork[] = [];
+  private readonly strokeSteps = new WeakSet<Artwork>();
   current: Artwork;
   saved: Artwork;
   constructor(start = initial()) {
@@ -124,8 +125,13 @@ export class History {
   get canRedo() {
     return this.future.length > 0;
   }
-  commit(next: Artwork) {
+  isStrokeStep(redo: boolean) {
+    const step = redo ? this.future.at(-1) : this.current;
+    return !!step && this.strokeSteps.has(step);
+  }
+  commit(next: Artwork, kind: 'edit' | 'stroke' = 'edit') {
     if (this.current === next) return;
+    if (kind === 'stroke') this.strokeSteps.add(next);
     this.past.push(this.current);
     this.current = next;
     this.future = [];

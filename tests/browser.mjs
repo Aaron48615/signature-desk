@@ -6,6 +6,7 @@ import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { chromium } from 'playwright';
 import { PNG } from 'pngjs';
+import { checkDirectGeometry } from './direct-geometry.mjs';
 import { checkNib } from './nib-browser.mjs';
 import { installCapBridge, checkStrokeCaps } from './stroke-caps.mjs';
 const dir = await mkdtemp(join(tmpdir(), 'inkpad-test-'));
@@ -573,6 +574,7 @@ try {
   console.log('PASS ' + (await caps.evaluate(checkStrokeCaps)));
   await caps.close();
   await checkNib(native);
+  await checkDirectGeometry(ctx, url);
   assert.deepEqual(errors, []);
   console.log(
     'PASS synthetic native channel maps absolute corners, keeps gaps and exits on interruption',
